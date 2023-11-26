@@ -1,13 +1,10 @@
 const { findBy } = require("../users/users-model.js");
 
-const checkUsernameExists = async (req, res, next) => {
+const loginCredentials = async (req, res, next) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return next({
-      status: 401,
-      message: "username and password required",
-    });
+    res.status(401).json({ message: "username and password required" });
   } else {
     try {
       const [existingUser] = await findBy({ username });
@@ -16,10 +13,27 @@ const checkUsernameExists = async (req, res, next) => {
         req.user = existingUser;
         next();
       } else {
-        next({
-          status: 401,
-          message: "invalid credentials",
-        });
+        res.status(401).json({ message: "invalid credentials" });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+};
+
+const registerCredentials = async (req, res, next) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    res.status(401).json({ message: "username and password required" });
+  } else {
+    try {
+      const [existingUser] = await findBy({ username });
+      console.log(existingUser);
+      if (existingUser) {
+        res.status(422).json({ message: "username taken" });
+      } else {
+        next();
       }
     } catch (err) {
       next(err);
@@ -28,5 +42,6 @@ const checkUsernameExists = async (req, res, next) => {
 };
 
 module.exports = {
-  checkUsernameExists,
+  registerCredentials,
+  loginCredentials,
 };

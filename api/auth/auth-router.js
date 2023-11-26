@@ -3,9 +3,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../secrets");
 const Users = require("../users/users-model");
-const { checkUsernameExists } = require("../middleware/login-midware");
+const {
+  registerCredentials,
+  loginCredentials,
+} = require("../middleware/login-midware");
 
-router.post("/register", (req, res) => {
+router.post("/register", registerCredentials, (req, res) => {
   // res.end('implement register, please!');
   /*
     IMPLEMENT
@@ -44,7 +47,7 @@ router.post("/register", (req, res) => {
     });
 });
 
-router.post("/login", checkUsernameExists, (req, res) => {
+router.post("/login", loginCredentials, (req, res) => {
   // res.end("implement login, please!");
   /*
     IMPLEMENT
@@ -74,7 +77,7 @@ router.post("/login", checkUsernameExists, (req, res) => {
     const token = generateToken(req.user);
     res.status(200).json({ message: `welcome, ${req.user.username}`, token });
   } else {
-    res.status(401).json({ message: "Invalid Credentials" });
+    res.status(401).json({ message: "invalid Credentials" });
   }
 });
 
